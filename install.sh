@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-REPO_URL=https://github.com/byomess/xcb.git
+REPO_URL=https://github.com/byomess/xcb
 
 INSTALL_PATH="${1:-$HOME/.local}"
 
@@ -13,7 +13,11 @@ APP_BIN="$APP_BIN_DIR/xcb"
 if [ -d "$APP_HOME" ] || [ -f "$APP_BIN" ]; then
 	echo "It seems that xcb is already installed at $APP_HOME"
 	echo -n "Do you want to reinstall it? (y/n): "
-	read -r -n 1 response
+
+	response=""
+
+	read -r -n 1 response </dev/tty
+
 	if [ "$response" != "y" ]; then
 		exit 0
 	else
@@ -47,3 +51,5 @@ echo "Cleaning up..."
 rm -rf $temp_dir
 
 echo "Successfully installed xcb at $APP_HOME"
+
+exit 0
