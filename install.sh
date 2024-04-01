@@ -1,0 +1,49 @@
+#!/bin/sh
+
+REPO_URL=https://github.com/byomess/xcb.git
+
+INSTALL_PATH="${1:-$HOME/.local}"
+
+APP_HOME_DIR="$INSTALL_PATH/share"
+APP_BIN_DIR="$INSTALL_PATH/bin"
+
+APP_HOME="$APP_HOME_DIR/xcb"
+APP_BIN="$APP_BIN_DIR/xcb"
+
+if [ -d "$APP_HOME" ] || [ -f "$APP_BIN" ]; then
+	echo "It seems that xcb is already installed at $APP_HOME"
+	echo -n "Do you want to reinstall it? (y/n): "
+	read -r -n 1 response
+	if [ "$response" != "y" ]; then
+		exit 0
+	else
+		echo ""
+		echo "Removing existing installation..."
+		rm -rf $APP_HOME
+		rm -f $APP_BIN
+		echo "Done removing existing installation"
+	fi
+fi
+
+mkdir -p $APP_HOME_DIR
+mkdir -p $APP_BIN_DIR
+
+temp_dir=$(mktemp -d)
+
+echo "Cloning xcb from $REPO_URL to $temp_dir..."
+git clone $REPO_URL $temp_dir --quiet
+
+echo "Moving xcb files to $APP_HOME..."
+mkdir -p $APP_HOME
+cp -r $temp_dir/* $APP_HOME
+
+echo "Creating symlink of $APP_HOME/xcb.sh at $APP_BIN..."
+ln -s $APP_HOME/xcb.sh $APP_BIN
+
+echo "Making xcb executable..."
+chmod +x $APP_BIN
+
+echo "Cleaning up..."
+rm -rf $temp_dir
+
+echo "Successfully installed xcb at $APP_HOME"
